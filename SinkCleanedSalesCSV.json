@@ -1,0 +1,26 @@
+{
+    "name": "SinkCleanedSalesCSV",
+    "type": "Microsoft.DataFactory/factories/datasets",
+    "properties": {
+        "type": "DelimitedText",
+        "description": "Sink dataset - cleaned sales output written to ADLS Gen2 processed container",
+        "linkedServiceName": {
+            "referenceName": "AzureDataLakeGen2",
+            "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileSystem": "processed",
+                "folderPath": "sales-cleaned"
+            },
+            "columnDelimiter": ",",
+            "rowDelimiter": "\n",
+            "firstRowAsHeader": true,
+            "encodingName": "UTF-8",
+            "quoteChar": "\""
+        },
+        "schema": [],
+        "annotations": []
+    }
+}

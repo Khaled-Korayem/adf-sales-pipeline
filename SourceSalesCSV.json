@@ -1,0 +1,36 @@
+{
+    "name": "SourceSalesCSV",
+    "type": "Microsoft.DataFactory/factories/datasets",
+    "properties": {
+        "type": "DelimitedText",
+        "description": "Source dataset - raw sales.csv from ADLS Gen2 raw container",
+        "linkedServiceName": {
+            "referenceName": "AzureDataLakeGen2",
+            "type": "LinkedServiceReference"
+        },
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobFSLocation",
+                "fileSystem": "raw",
+                "folderPath": "sales-data",
+                "fileName": "sales.csv"
+            },
+            "columnDelimiter": ",",
+            "rowDelimiter": "\n",
+            "firstRowAsHeader": true,
+            "encodingName": "UTF-8",
+            "quoteChar": "\""
+        },
+        "schema": [
+            { "name": "order_id",     "type": "String" },
+            { "name": "order_date",   "type": "String" },
+            { "name": "customer_id",  "type": "String" },
+            { "name": "product",      "type": "String" },
+            { "name": "category",     "type": "String" },
+            { "name": "quantity",     "type": "String" },
+            { "name": "unit_price",   "type": "String" },
+            { "name": "Total Amount", "type": "String" }
+        ],
+        "annotations": []
+    }
+}

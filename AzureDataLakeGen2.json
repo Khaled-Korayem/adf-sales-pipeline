@@ -1,0 +1,16 @@
+{
+    "name": "AzureDataLakeGen2",
+    "type": "Microsoft.DataFactory/factories/linkedservices",
+    "properties": {
+        "type": "AzureBlobFS",
+        "description": "Linked Service for Azure Data Lake Storage Gen2 - korayemstorage",
+        "typeProperties": {
+            "url": "https://<YOUR_STORAGE_ACCOUNT>.dfs.core.windows.net",
+            "accountKey": {
+                "type": "SecureString",
+                "value": "<YOUR_ACCOUNT_KEY>"
+            }
+        },
+        "annotations": []
+    }
+}

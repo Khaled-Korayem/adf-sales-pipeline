@@ -1,0 +1,35 @@
+{
+    "name": "SalesCleaningPipeline",
+    "type": "Microsoft.DataFactory/factories/pipelines",
+    "properties": {
+        "description": "Pipeline that orchestrates the Sales CSV cleaning workflow: reads raw sales.csv from ADLS Gen2 raw container, applies cleaning and sorting transformations via Mapping Data Flow, and writes cleaned output to processed container.",
+        "activities": [
+            {
+                "name": "SalesCleaningDataFlow",
+                "type": "ExecuteDataFlow",
+                "description": "Cleans and sorts sales data, writes to ADLS Gen2 processed container",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "1.00:00:00",
+                    "retry": 2,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "typeProperties": {
+                    "dataflow": {
+                        "referenceName": "SalesCleaningDataFlow",
+                        "type": "DataFlowReference"
+                    },
+                    "compute": {
+                        "coreCount": 8,
+                        "computeType": "General"
+                    },
+                    "traceLevel": "Fine"
+                }
+            }
+        ],
+        "annotations": [],
+        "lastPublishTime": "2026-04-19T00:00:00Z"
+    }
+}

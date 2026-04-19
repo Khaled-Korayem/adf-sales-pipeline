@@ -1,0 +1,54 @@
+{
+    "name": "SalesCleaningDataFlow",
+    "type": "Microsoft.DataFactory/factories/dataflows",
+    "properties": {
+        "type": "MappingDataFlow",
+        "description": "Mapping Data Flow that cleans raw sales data with 5 transformations: removes nulls, removes negatives, normalizes all columns, recalculates total amount, and sorts by order_date ASC then order_id ASC.",
+        "typeProperties": {
+            "sources": [
+                {
+                    "name": "SourceSalesCSV",
+                    "description": "Read raw sales CSV from ADLS Gen2 raw container",
+                    "dataset": {
+                        "referenceName": "SourceSalesCSV",
+                        "type": "DatasetReference"
+                    }
+                }
+            ],
+            "sinks": [
+                {
+                    "name": "SinkCleanedSalesCSV",
+                    "description": "Write cleaned and sorted CSV to ADLS Gen2 processed container",
+                    "dataset": {
+                        "referenceName": "SinkCleanedSalesCSV",
+                        "type": "DatasetReference"
+                    }
+                }
+            ],
+            "transformations": [
+                {
+                    "name": "RemoveNullRows",
+                    "type": "Filter",
+                    "description": "Remove rows where critical fields are null"
+                },
+                {
+                    "name": "RemoveNegativeValues",
+                    "type": "Filter",
+                    "description": "Remove rows where quantity <= 0 or unit_price <= 0"
+                },
+                {
+                    "name": "NormalizeAndRecalculate",
+                    "type": "DerivedColumn",
+                    "description": "Normalize category, customer_id, order_date formats and recalculate total_amount"
+                },
+                {
+                    "name": "SortByDateAndOrderID",
+                    "type": "Sort",
+                    "description": "Sort by order_date ASC then order_id ASC"
+                }
+            ],
+            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SourceSalesCSV\n\nSourceSalesCSV filter(\n\t!isNull(order_id) &&\n\t!isNull(order_date) &&\n\t!isNull(customer_id) &&\n\t!isNull(product) &&\n\t!isNull(quantity) &&\n\t!isNull(unit_price)\n) ~> RemoveNullRows\n\nRemoveNullRows filter(\n\ttoInteger(quantity) > 0 &&\n\ttoDouble(unit_price) > 0\n) ~> RemoveNegativeValues\n\nRemoveNegativeValues derive(\n\tcategory = 'Electronics',\n\tcustomer_id = 'CUST' + right('00' + toString(toInteger(regexReplace(upper(customer_id),'[^0-9]',''))), 3),\n\torder_date = iif(\n\t\tlocate('/', order_date) > 0 && length(order_date) == 10,\n\t\ttoString(toDate(order_date, 'yyyy/MM/dd'), 'yyyy-MM-dd'),\n\t\tiif(\n\t\t\tlocate('/', order_date) > 0,\n\t\t\ttoString(toDate(order_date, 'MM/dd/yyyy'), 'yyyy-MM-dd'),\n\t\t\tiif(\n\t\t\t\tlocate('-', order_date) > 0,\n\t\t\t\ttoString(toDate(order_date, 'yyyy-MM-dd'), 'yyyy-MM-dd'),\n\t\t\t\tiif(\n\t\t\t\t\tlocate(' ', order_date) > 0,\n\t\t\t\t\ttoString(toDate(order_date, 'MMMM d yyyy'), 'yyyy-MM-dd'),\n\t\t\t\t\torder_date\n\t\t\t\t)\n\t\t\t)\n\t\t)\n\t),\n\ttotal_amount = toInteger(quantity) * toDouble(unit_price)\n) ~> NormalizeAndRecalculate\n\nNormalizeAndRecalculate sort(\n\tasc(order_date, true),\n\tasc(order_id, true)\n) ~> SortByDateAndOrderID\n\nSortByDateAndOrderID sink(\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionFileNames: ['sales_cleaned.csv'],\n\tpartitionBy('hash', 1)\n) ~> SinkCleanedSalesCSV"
+        },
+        "annotations": []
+    }
+}
