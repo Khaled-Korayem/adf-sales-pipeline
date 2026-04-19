@@ -199,13 +199,13 @@ Condition 2: order_id   ASC
 ## Screenshots
 
 ### Data Flow Canvas
-![Data Flow Canvas](docs/dataflow_screenshot.png)
+![Data Flow Canvas](docs/dataflow.png)
 
 ### Pipeline Run — Monitor Tab
-![Pipeline Run](docs/pipeline_run_screenshot.png)
+![Pipeline Run](docs/pipeline_run.png)
 
 ### Output File in ADLS Gen2
-![Output File](docs/output_screenshot.png)
+![Output File](docs/output.png)
 
 ---
 
