@@ -199,7 +199,7 @@ Condition 2: order_id   ASC
 ## Screenshots
 
 ### Data Flow Canvas
-![Data Flow Canvas](docs/dataflow.png)
+![Data Flow Canvas](pictures/dataflow.png)
 
 ### Pipeline Run — Monitor Tab
 ![Pipeline Run](docs/pipeline_run.png)
